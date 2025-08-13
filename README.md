@@ -31,7 +31,7 @@ To preview the pre-rendered production build locally:
 
 ```sh
 npm run build
-npx sirv-cli build/client
+npm run start
 ```
 
 ## Deployment
