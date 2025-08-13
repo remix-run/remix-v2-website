@@ -159,7 +159,7 @@ function Header() {
             </div>
             <div className="flex items-center gap-2">
               <HeaderLink
-                href="https://github.com/remix-run/remix"
+                href="https://github.com/remix-run/remix/tree/v2"
                 svgId="github"
                 label="View code on GitHub"
                 title="View code on GitHub"
@@ -656,16 +656,12 @@ function MenuLink({ to, children }: { to: string; children: React.ReactNode }) {
 
 function EditLink() {
   let doc = useDoc();
-  let params = useParams();
-  let isEditableRef = params.ref === "main" || params.ref === "dev";
-
-  if (!doc || !isEditableRef) {
+  if (!doc) {
     return null;
   }
 
-  let repoUrl = "https://github.com/remix-run/remix";
-  // TODO: deal with translations when we add them with params.lang
-  let editUrl = `${repoUrl}/edit/${params.ref}/${doc.slug}.md`;
+  let repoUrl = "https://github.com/remix-run/remix-v2-website";
+  let editUrl = `${repoUrl}/edit/main/data/${doc.slug}.md`;
 
   return (
     <a className="flex items-center gap-1 hover:underline" href={editUrl}>
