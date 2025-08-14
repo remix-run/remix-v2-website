@@ -1,0 +1,54 @@
+name: 📄 GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Logic based on examples in:
+# - https://github.com/actions/upload-pages-artifact
+# - https://github.com/actions/deploy-pages
+
+jobs:
+  build:
+    if: github.repository == 'remix-run/remix-v2-website'
+    name: 🏗 Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📥 Install deps
+        run: npm ci
+
+      - name: 🏗 Build
+        run: npm run build
+
+      - name: ⬆️ Upload static files as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/client/
+
+  deploy:
+    name: 🚀 Deploy
+    needs: build
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
