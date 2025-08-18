@@ -41,8 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   let isDevHost = !isProductionHost(request);
   let url = new URL(request.url);
 
-  let requestUrl = new URL(request.url);
-  let siteUrl = requestUrl.protocol + "//" + requestUrl.host;
+  let siteUrl = "https://v2.remix.run";
 
   return data({
     host: url.host,
@@ -74,7 +73,6 @@ export function links() {
       href: `/font/${font}`,
       crossOrigin: "anonymous",
     })),
-    { rel: "alternate", type: "application/rss+xml", href: "/blog/rss.xml" },
   ];
 }
 

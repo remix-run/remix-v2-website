@@ -11,8 +11,8 @@ import { getMeta } from "~/lib/meta";
 import { CACHE_CONTROL } from "~/lib/http.server";
 import type { Route } from "./+types/_marketing._index";
 
-export function meta({ data }: Route.MetaArgs) {
-  let siteUrl = data?.siteUrl;
+export function meta({ matches }: Route.MetaArgs) {
+  let { siteUrl } = matches[0].loaderData;
   let title = "Remix - Build Better Websites";
   let image = siteUrl ? `${siteUrl}/img/og.1.jpg` : undefined;
   let description =
@@ -21,7 +21,7 @@ export function meta({ data }: Route.MetaArgs) {
   return getMeta({ title, description, siteUrl, image });
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async () => {
   let [[sample], [sampleSm], [, mutations], [, errors]] = await Promise.all([
     getMarkdownTutPage("marketing/sample/sample.md"),
     getMarkdownTutPage("marketing/sample-sm/sample.md"),
@@ -34,14 +34,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   invariant(mutations.type === "sequence", "mutations.md should be a sequence");
   invariant(errors.type === "sequence", "errors.md should be a sequence");
 
-  let requestUrl = new URL(request.url);
-  let siteUrl = requestUrl.protocol + "//" + requestUrl.host;
-
   return data(
     {
       sample,
       sampleSm,
-      siteUrl,
       mutations,
       errors,
     },
