@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useLayoutEffect } from "~/ui/primitives/utils";
+import { canUseDOM, useLayoutEffect } from "~/ui/primitives/utils";
 
 export type ColorScheme = "dark" | "light" | "system";
 
@@ -16,6 +16,8 @@ function getStoredColorScheme(): ColorScheme {
 }
 
 function applyColorScheme(colorScheme: ColorScheme) {
+  if (!canUseDOM) return;
+
   document.documentElement.setAttribute("data-color-scheme", colorScheme);
 
   const isDark =
