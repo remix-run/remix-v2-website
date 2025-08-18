@@ -15,6 +15,17 @@ function getStoredColorScheme(): ColorScheme {
   return "system";
 }
 
+function applyColorScheme(colorScheme: ColorScheme) {
+  document.documentElement.setAttribute("data-color-scheme", colorScheme);
+
+  const isDark =
+    colorScheme === "dark" ||
+    (colorScheme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  document.documentElement.classList.toggle("dark", isDark);
+}
+
 export function useColorScheme() {
   const [colorScheme, setColorScheme] = useState(() => getStoredColorScheme());
 
@@ -25,7 +36,6 @@ export function useColorScheme() {
 
     // Listen for changes in the same window
     window.addEventListener(COLOR_SCHEME_EVENT, handleColorSchemeChange);
-
     // Listen for changes in other tabs/windows
     window.addEventListener("storage", handleColorSchemeChange);
 
@@ -39,16 +49,20 @@ export function useColorScheme() {
 }
 
 export function setColorScheme(colorScheme: ColorScheme) {
+  // Update localStorage
   if (colorScheme === "system") {
     localStorage.removeItem(COLOR_SCHEME_KEY);
   } else {
     localStorage.setItem(COLOR_SCHEME_KEY, colorScheme);
   }
 
-  // Dispatch custom event to update all components in the same window
+  // Apply the scheme immediately
+  applyColorScheme(colorScheme);
+
+  // Notify all components in the same window
   window.dispatchEvent(new Event(COLOR_SCHEME_EVENT));
 
-  // Dispatch storage event to update other tabs/windows
+  // Notify other tabs/windows
   window.dispatchEvent(
     new StorageEvent("storage", {
       key: COLOR_SCHEME_KEY,
@@ -56,92 +70,41 @@ export function setColorScheme(colorScheme: ColorScheme) {
       url: window.location.href,
     }),
   );
-
-  // Update the data attribute immediately
-  document.documentElement.setAttribute("data-color-scheme", colorScheme);
-
-  // Apply the dark class based on the new scheme
-  applyColorScheme(colorScheme);
-}
-
-function syncColorScheme(media: MediaQueryList | MediaQueryListEvent) {
-  if (media.matches) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
-}
-
-function applyColorScheme(colorScheme: ColorScheme) {
-  switch (colorScheme) {
-    case "light":
-      document.documentElement.classList.remove("dark");
-      break;
-    case "dark":
-      document.documentElement.classList.add("dark");
-      break;
-    case "system": {
-      const media = window.matchMedia("(prefers-color-scheme: dark)");
-      syncColorScheme(media);
-      break;
-    }
-  }
 }
 
 function ColorSchemeScriptImpl() {
-  // This script runs before React hydration to prevent flash of incorrect theme
-  let script = useMemo(
-    () => `
-      (function() {
-        const storedScheme = localStorage.getItem('${COLOR_SCHEME_KEY}');
-        let colorScheme = storedScheme || 'system';
-        
-        // Set the data attribute
-        document.documentElement.setAttribute('data-color-scheme', colorScheme);
-        
-        // Apply the appropriate class
-        if (colorScheme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else if (colorScheme === 'light') {
-          document.documentElement.classList.remove('dark');
-        } else if (colorScheme === 'system') {
-          const media = window.matchMedia('(prefers-color-scheme: dark)');
-          if (media.matches) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        }
-      })();
-    `,
-    [],
-  );
-
   const colorScheme = useColorScheme();
 
-  // Handle runtime changes
+  // Re-apply color scheme on every render to handle client-side navigation
   useLayoutEffect(() => {
-    document.documentElement.setAttribute("data-color-scheme", colorScheme);
     applyColorScheme(colorScheme);
+  });
 
+  // Handle system preference changes
+  useLayoutEffect(() => {
     if (colorScheme === "system") {
       const media = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = (e: MediaQueryListEvent) => {
-        syncColorScheme(e);
-      };
+      const handleChange = () => applyColorScheme("system");
       media.addEventListener("change", handleChange);
       return () => media.removeEventListener("change", handleChange);
     }
   }, [colorScheme]);
 
-  // Also apply color scheme on every render to handle client-side navigation
-  // This ensures system preference is re-evaluated when navigating between routes
-  useLayoutEffect(() => {
-    if (colorScheme === "system") {
-      const media = window.matchMedia("(prefers-color-scheme: dark)");
-      syncColorScheme(media);
-    }
-  });
+  // Script to run before React hydration
+  const script = useMemo(
+    () => `
+      (function() {
+        const stored = localStorage.getItem('${COLOR_SCHEME_KEY}');
+        const colorScheme = stored || 'system';
+        const isDark = colorScheme === 'dark' || 
+          (colorScheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        document.documentElement.setAttribute('data-color-scheme', colorScheme);
+        document.documentElement.classList.toggle('dark', isDark);
+      })();
+    `,
+    [],
+  );
 
   return <script dangerouslySetInnerHTML={{ __html: script }} />;
 }
