@@ -134,6 +134,15 @@ function ColorSchemeScriptImpl() {
     }
   }, [colorScheme]);
 
+  // Also apply color scheme on every render to handle client-side navigation
+  // This ensures system preference is re-evaluated when navigating between routes
+  useLayoutEffect(() => {
+    if (colorScheme === "system") {
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      syncColorScheme(media);
+    }
+  });
+
   return <script dangerouslySetInnerHTML={{ __html: script }} />;
 }
 
