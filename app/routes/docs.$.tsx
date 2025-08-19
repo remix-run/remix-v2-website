@@ -46,8 +46,8 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 
 export function meta({ loaderData, matches }: Route.MetaArgs) {
   let rootData = matches[0].loaderData;
-  invariant(rootData && "isProductionHost" in rootData, "No root data found");
-  let { siteUrl, isProductionHost } = rootData;
+  invariant(rootData, "No root data found");
+  let { siteUrl } = rootData;
   let ogImageUrl = siteUrl + "/img/og.1.jpg";
 
   if (!loaderData) {
@@ -55,9 +55,6 @@ export function meta({ loaderData, matches }: Route.MetaArgs) {
   }
 
   let { doc } = loaderData;
-
-  let robots = isProductionHost ? "index,follow" : "noindex,nofollow";
-  robots = "index,follow";
 
   return getMeta({
     title: `${doc.attrs.title} | Remix`,
@@ -70,8 +67,8 @@ export function meta({ loaderData, matches }: Route.MetaArgs) {
       { name: "og:site_name", content: "Remix" },
       { name: "docsearch:language", content: "en" },
       { name: "docsearch:version", content: "main" },
-      { name: "robots", content: robots },
-      { name: "googlebot", content: robots },
+      { name: "robots", content: "index,follow" },
+      { name: "googlebot", content: "index,follow" },
     ],
   });
 }

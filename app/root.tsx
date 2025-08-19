@@ -18,11 +18,7 @@ import {
 } from "fathom-client";
 import "~/styles/tailwind.css";
 import "~/styles/bailwind.css";
-import {
-  removeTrailingSlashes,
-  isProductionHost,
-  handleRedirects,
-} from "~/lib/http.server";
+import { removeTrailingSlashes, handleRedirects } from "~/lib/http.server";
 import { ColorSchemeScript, useColorScheme } from "~/lib/color-scheme";
 import iconsHref from "~/icons.svg";
 import cx from "clsx";
@@ -38,7 +34,6 @@ export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
 
 export async function loader({ request }: LoaderFunctionArgs) {
   removeTrailingSlashes(request);
-  let isDevHost = !isProductionHost(request);
   let url = new URL(request.url);
 
   let siteUrl = "https://v2.remix.run";
@@ -46,9 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return data({
     host: url.host,
     siteUrl,
-    isProductionHost: !isDevHost,
     noIndex:
-      isDevHost ||
       url.pathname === "/docs/en/v1/api/remix" ||
       url.pathname === "/docs/en/v1/api/conventions",
   });

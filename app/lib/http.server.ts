@@ -66,10 +66,6 @@ export function removeTrailingSlashes(request: Request) {
   }
 }
 
-export function isProductionHost(request: Request) {
-  return "remix.run" === request.headers.get("host");
-}
-
 function getValidRedirectCode(code: string | number | undefined) {
   let defaultCode = 302;
   if (!code) return defaultCode;
