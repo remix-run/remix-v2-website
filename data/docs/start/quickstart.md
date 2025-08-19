@@ -7,9 +7,7 @@ order: 1
 
 <docs-warning>Just getting started with Remix? The latest version of [Remix is now React Router v7][remix-now-react-router]. If you want to use the latest features, you should use the [React Router docs to get started][react-router-get-started].</docs-warning>
 
-This guide will get you familiar with the basic plumbing required to run a Remix app as quickly as possible. While there are many starter templates with different runtimes, deploy targets, and databases, we're going to create a bare-bones project from scratch.
-
-When you're ready to get serious about your Remix project, you might consider starting with a community template. They include TypeScript setups, databases, testing harnesses, authentication, and more. You can find a list of community templates on the [Remix Resources][templates] page.
+This guide will get you familiar with the basic plumbing required to run a Remix app as quickly as possible. While there are many starter [templates][templates] with different runtimes, deploy targets, and databases, we're going to create a bare-bones project from scratch.
 
 ## Installation
 
@@ -277,11 +275,10 @@ What's next?
 [create-remix]: ../other-api/create-remix
 [runtimes]: ../discussion/runtimes
 [inspect]: https://nodejs.org/en/docs/guides/debugging-getting-started/
-[tutorial]: ./tutorial
+[tutorial]: /docs/start/tutorial./tutorial
 [vite_config]: ../file-conventions/vite-config
-[templates]: /resources?category=templates
+[templates]: https://github.com/remix-run/remix/tree/v2/templates
 [http-localhost-3000]: http://localhost:3000
-[es-modules]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
 [vite]: https://vitejs.dev
 [vite-config]: https://vitejs.dev/config
 [vite-middleware]: https://vitejs.dev/guide/ssr#setting-up-the-dev-server
