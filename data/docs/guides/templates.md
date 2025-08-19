@@ -159,7 +159,7 @@ After the init script has been run, the `remix.init` folder gets deleted, so you
 [remix_app_server]: ../other-api/serve
 [repo_access_token]: https://github.com/settings/tokens/new?description=Remix%20Private%20Stack%20Access&scopes=repo
 [inquirer]: https://npm.im/inquirer
-[feature_announcement_blog_post]: /blog/remix-stacks
+[feature_announcement_blog_post]: https://remix.run/blog/remix-stacks
 [remix_stacks_videos_on_youtube]: https://www.youtube.com/playlist?list=PLXoynULbYuEC8-gJCqyXo94RufAvSA6R3
 [blues_stack]: https://github.com/remix-run/blues-stack
 [indie_stack]: https://github.com/remix-run/indie-stack
