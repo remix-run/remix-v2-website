@@ -1,13 +1,11 @@
 import * as React from "react";
 import {
-  Form,
   Link,
   Outlet,
   useLoaderData,
   useLocation,
   useMatches,
   useNavigation,
-  useParams,
   useResolvedPath,
   matchPath,
   useNavigate,
@@ -22,9 +20,14 @@ import { Wordmark } from "~/ui/logo";
 import { DetailsMenu, DetailsPopup } from "~/ui/details-menu";
 
 import iconsHref from "~/icons.svg";
-import { useColorScheme } from "~/lib/color-scheme";
+import {
+  useColorScheme,
+  setColorScheme,
+  type ColorScheme,
+} from "~/lib/color-scheme";
 import { CACHE_CONTROL } from "~/lib/http.server";
 import { Doc, getMenu } from "~/lib/docs";
+import { useHydrated } from "~/ui/primitives/utils";
 
 export const headers: HeadersFunction = () => {
   return {
@@ -199,14 +202,23 @@ function DocSearchSection({ className }: { className?: string }) {
 }
 
 function ColorSchemeToggle() {
-  let location = useLocation();
-
   // This is the same default, hover, focus style as the VersionSelect
   let baseClasses =
     "bg-gray-100 hover:bg-gray-200 [[open]>&]:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:[[open]>&]:bg-gray-700";
 
+  // A little hacky, but avoids reinventing all the close logic (like clicking outside the menu)
+  const detailsRef = React.useRef<HTMLDetailsElement>(null);
+
+  const handleColorSchemeChange = (value: ColorScheme) => {
+    setColorScheme(value);
+    // Close the details menu after selection
+    if (detailsRef.current) {
+      detailsRef.current.open = false;
+    }
+  };
+
   return (
-    <DetailsMenu className="relative cursor-pointer">
+    <DetailsMenu ref={detailsRef} className="relative cursor-pointer">
       <summary
         className={cx(
           baseClasses,
@@ -221,37 +233,26 @@ function ColorSchemeToggle() {
         </svg>
       </summary>
       <DetailsPopup>
-        <Form
-          preventScrollReset
-          replace
-          action="/_actions/color-scheme"
-          method="post"
-          className="flex flex-col gap-px"
-        >
-          <input
-            type="hidden"
-            name="returnTo"
-            value={location.pathname + location.search}
-          />
+        <div className="flex flex-col gap-px">
           <ColorSchemeButton
             svgId="sun"
             label="Light"
             value="light"
-            name="colorScheme"
+            onClick={() => handleColorSchemeChange("light")}
           />
           <ColorSchemeButton
             svgId="moon"
             label="Dark"
             value="dark"
-            name="colorScheme"
+            onClick={() => handleColorSchemeChange("dark")}
           />
           <ColorSchemeButton
             svgId="monitor"
             label="System"
             value="system"
-            name="colorScheme"
+            onClick={() => handleColorSchemeChange("system")}
           />
-        </Form>
+        </div>
       </DetailsPopup>
     </DetailsMenu>
   );
@@ -259,17 +260,31 @@ function ColorSchemeToggle() {
 
 let ColorSchemeButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentPropsWithRef<"button"> & { svgId: string; label: string }
->(({ svgId, label, ...props }, forwardedRef) => {
+  React.ComponentPropsWithRef<"button"> & {
+    svgId: string;
+    label: string;
+    value: string;
+  }
+>(({ svgId, label, value, ...props }, forwardedRef) => {
   let colorScheme = useColorScheme();
+
+  // Avoids hydration issues that kept buttons permanently disabled
+  // this is fine though since you can't use this feature with out JS anyway
+  const isHydrated = useHydrated();
+
+  if (!isHydrated) {
+    return null;
+  }
+
   return (
     <button
       {...props}
       ref={forwardedRef}
-      disabled={colorScheme === props.value}
+      type="button"
+      disabled={colorScheme === value}
       className={cx(
         "flex w-full items-center gap-2 rounded-sm px-2 py-2 text-sm transition-colors duration-100",
-        colorScheme === props.value
+        colorScheme === value
           ? "bg-blue-200 text-black dark:bg-blue-800 dark:text-gray-100"
           : "text-gray-700 hover:bg-blue-200/50 hover:text-black dark:text-gray-300 dark:hover:bg-blue-800/50 dark:hover:text-gray-100",
       )}

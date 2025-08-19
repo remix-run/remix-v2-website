@@ -1,72 +1,112 @@
-import { useMemo } from "react";
-import { useNavigation, useRouteLoaderData } from "react-router";
-import type { loader as rootLoader } from "~/root";
-import { useLayoutEffect } from "~/ui/primitives/utils";
+import { useMemo, useState } from "react";
+import { canUseDOM, useLayoutEffect } from "~/ui/primitives/utils";
 
 export type ColorScheme = "dark" | "light" | "system";
 
-export function useColorScheme(): ColorScheme {
-  let rootLoaderData = useRouteLoaderData<typeof rootLoader>("root");
-  let rootColorScheme = rootLoaderData?.colorScheme ?? "system";
+const COLOR_SCHEME_KEY = "remix-color-scheme";
+const COLOR_SCHEME_EVENT = "colorschemechange";
 
-  let { formData } = useNavigation();
-  let optimisticColorScheme = formData?.has("colorScheme")
-    ? (formData.get("colorScheme") as ColorScheme)
-    : null;
-  return optimisticColorScheme || rootColorScheme;
+function getStoredColorScheme(): ColorScheme {
+  if (typeof window === "undefined") return "system";
+  const stored = localStorage.getItem(COLOR_SCHEME_KEY);
+  if (stored === "dark" || stored === "light" || stored === "system") {
+    return stored;
+  }
+  return "system";
 }
 
-function syncColorScheme(media: MediaQueryList | MediaQueryListEvent) {
-  if (media.matches) {
-    document.documentElement.classList.add("dark");
+function applyColorScheme(colorScheme: ColorScheme) {
+  if (!canUseDOM) return;
+
+  document.documentElement.setAttribute("data-color-scheme", colorScheme);
+
+  const isDark =
+    colorScheme === "dark" ||
+    (colorScheme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  document.documentElement.classList.toggle("dark", isDark);
+}
+
+export function useColorScheme() {
+  const [colorScheme, setColorScheme] = useState(() => getStoredColorScheme());
+
+  useLayoutEffect(() => {
+    const handleColorSchemeChange = () => {
+      setColorScheme(getStoredColorScheme());
+    };
+
+    // Listen for changes in the same window
+    window.addEventListener(COLOR_SCHEME_EVENT, handleColorSchemeChange);
+    // Listen for changes in other tabs/windows
+    window.addEventListener("storage", handleColorSchemeChange);
+
+    return () => {
+      window.removeEventListener(COLOR_SCHEME_EVENT, handleColorSchemeChange);
+      window.removeEventListener("storage", handleColorSchemeChange);
+    };
+  }, []);
+
+  return colorScheme;
+}
+
+export function setColorScheme(colorScheme: ColorScheme) {
+  // Update localStorage
+  if (colorScheme === "system") {
+    localStorage.removeItem(COLOR_SCHEME_KEY);
   } else {
-    document.documentElement.classList.remove("dark");
+    localStorage.setItem(COLOR_SCHEME_KEY, colorScheme);
   }
+
+  // Apply the scheme immediately
+  applyColorScheme(colorScheme);
+
+  // Notify all components in the same window
+  window.dispatchEvent(new Event(COLOR_SCHEME_EVENT));
+
+  // Notify other tabs/windows
+  window.dispatchEvent(
+    new StorageEvent("storage", {
+      key: COLOR_SCHEME_KEY,
+      newValue: colorScheme === "system" ? null : colorScheme,
+      url: window.location.href,
+    }),
+  );
 }
 
 function ColorSchemeScriptImpl() {
-  let colorScheme = useColorScheme();
-  // This script automatically adds the dark class to the document element if
-  // colorScheme is "system" and prefers-color-scheme: dark is true.
-  let script = useMemo(
-    () => `
-        let colorScheme = ${JSON.stringify(colorScheme)};
-        if (colorScheme === "system") {
-          let media = window.matchMedia("(prefers-color-scheme: dark)")
-          if (media.matches) document.documentElement.classList.add("dark");
-        }
-      `,
-    [], // eslint-disable-line -- we don't want this script to ever change
-  );
+  const colorScheme = useColorScheme();
 
-  // Set
+  // Re-apply color scheme on every render to handle client-side navigation
   useLayoutEffect(() => {
-    switch (colorScheme) {
-      case "light":
-        document.documentElement.classList.remove("dark");
-        break;
-      case "dark":
-        document.documentElement.classList.add("dark");
-        break;
-      case "system": {
-        let media = window.matchMedia("(prefers-color-scheme: dark)");
-        syncColorScheme(media);
-        media.addEventListener("change", syncColorScheme);
-        return () => media.removeEventListener("change", syncColorScheme);
-      }
-      default:
-        console.error("Impossible color scheme state:", colorScheme);
+    applyColorScheme(colorScheme);
+  });
+
+  // Handle system preference changes
+  useLayoutEffect(() => {
+    if (colorScheme === "system") {
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => applyColorScheme("system");
+      media.addEventListener("change", handleChange);
+      return () => media.removeEventListener("change", handleChange);
     }
   }, [colorScheme]);
 
-  // always sync the color scheme if "system" is used
-  // this accounts for the docs pages adding some classnames to documentElement in root
-  useLayoutEffect(() => {
-    if (colorScheme === "system") {
-      let media = window.matchMedia("(prefers-color-scheme: dark)");
-      syncColorScheme(media);
-    }
-  });
+  // Script to run before React hydration
+  const script = useMemo(
+    () => `
+      (function() {
+        const stored = localStorage.getItem('${COLOR_SCHEME_KEY}');
+        const colorScheme = stored || 'system';
+        const isDark = colorScheme === 'dark' || 
+          (colorScheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        document.documentElement.setAttribute('data-color-scheme', colorScheme);
+        document.documentElement.classList.toggle('dark', isDark);
+      })();
+    `,
+    [],
+  );
 
   return <script dangerouslySetInnerHTML={{ __html: script }} />;
 }

@@ -24,7 +24,6 @@ import {
   handleRedirects,
 } from "~/lib/http.server";
 import { ColorSchemeScript, useColorScheme } from "~/lib/color-scheme";
-import { parseColorScheme } from "~/lib/color-scheme.server";
 import iconsHref from "~/icons.svg";
 import cx from "clsx";
 import { canUseDOM } from "./ui/primitives/utils";
@@ -42,28 +41,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   let isDevHost = !isProductionHost(request);
   let url = new URL(request.url);
 
-  let colorScheme = await parseColorScheme(request);
-
   let requestUrl = new URL(request.url);
   let siteUrl = requestUrl.protocol + "//" + requestUrl.host;
 
-  return data(
-    {
-      colorScheme,
-      host: url.host,
-      siteUrl,
-      isProductionHost: !isDevHost,
-      noIndex:
-        isDevHost ||
-        url.pathname === "/docs/en/v1/api/remix" ||
-        url.pathname === "/docs/en/v1/api/conventions",
-    },
-    {
-      headers: {
-        Vary: "Cookie",
-      },
-    },
-  );
+  return data({
+    host: url.host,
+    siteUrl,
+    isProductionHost: !isDevHost,
+    noIndex:
+      isDevHost ||
+      url.pathname === "/docs/en/v1/api/remix" ||
+      url.pathname === "/docs/en/v1/api/conventions",
+  });
 }
 
 export function links() {
@@ -117,7 +106,7 @@ function Document({
         dark: forceDark || colorScheme === "dark",
         "scroll-pt-[6rem] lg:scroll-pt-[4rem]": isDocsPage,
       })}
-      data-theme={forceDark ? "dark" : colorScheme}
+      data-color-scheme={forceDark ? "dark" : colorScheme}
     >
       <head>
         <ColorSchemeScript forceConsistentTheme={forceDark} />
