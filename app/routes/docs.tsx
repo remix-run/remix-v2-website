@@ -158,7 +158,7 @@ function Header() {
           <div className="flex gap-8">
             <div className="hidden items-center md:flex">
               <HeaderMenuLink to={href("/docs")}>Docs</HeaderMenuLink>
-              <HeaderMenuLink to={href("/blog")}>Blog</HeaderMenuLink>
+              <HeaderMenuLink to="https://remix.run/blog">Blog</HeaderMenuLink>
             </div>
             <div className="flex items-center gap-2">
               <HeaderLink
@@ -383,7 +383,7 @@ function HeaderMenuMobile({ className = "" }: { className: string }) {
       <DetailsPopup>
         <div className="flex flex-col">
           <HeaderMenuLink to={href("/docs")}>Docs</HeaderMenuLink>
-          <HeaderMenuLink to={href("/blog")}>Blog</HeaderMenuLink>
+          <HeaderMenuLink to="https://remix.run/blog">Blog</HeaderMenuLink>
         </div>
       </DetailsPopup>
     </DetailsMenu>

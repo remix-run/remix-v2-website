@@ -11,13 +11,7 @@ export default {
     mode: "initial",
   },
   prerender({ getStaticPaths }) {
-    return [
-      ...getStaticPaths(),
-      "/docs",
-      ...getDocsUrls(),
-      ...getBlogUrls(),
-      ...getRedirects(),
-    ];
+    return [...getStaticPaths(), "/docs", ...getDocsUrls(), ...getRedirects()];
   },
 } satisfies Config;
 
@@ -29,16 +23,6 @@ function getDocsUrls() {
   return files
     .filter((f) => f.endsWith(".md") && path.basename(f) !== "index.md")
     .map((f) => `/docs/${f.replace(/\.md$/, "")}`);
-}
-
-function getBlogUrls() {
-  const blogDir = path.join(process.cwd(), "data", "posts");
-  let files = fs
-    .readdirSync(blogDir, { withFileTypes: false })
-    .filter((f) => typeof f === "string");
-  return files
-    .filter((f) => f.endsWith(".md") && path.basename(f) !== "index.md")
-    .map((f) => `/blog/${f.replace(/\.md$/, "")}`);
 }
 
 function getRedirects() {

@@ -20,11 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import cx from "clsx";
 import type { Route } from "./+types/docs.$";
 
-export async function loader({ params, request }: Route.LoaderArgs) {
-  let url = new URL(request.url);
-  let baseUrl = url.protocol + "//" + url.host;
-  let siteUrl = baseUrl + url.pathname;
-  let ogImageUrl = baseUrl + "/img/og.1.jpg";
+export async function loader({ params }: Route.LoaderArgs) {
   try {
     let slug = params["*"]?.endsWith("/changelog")
       ? "CHANGELOG"
@@ -32,7 +28,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     let doc = await getDoc(slug);
     if (!doc) throw null;
     return data(
-      { doc, siteUrl, ogImageUrl },
+      { doc },
       { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
     );
   } catch (error) {
@@ -48,20 +44,20 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
   return headers;
 };
 
-export function meta({ data, matches }: Route.MetaArgs) {
-  let rootData = matches[0].data;
+export function meta({ loaderData, matches }: Route.MetaArgs) {
+  let rootData = matches[0].loaderData;
   invariant(rootData && "isProductionHost" in rootData, "No root data found");
+  let { siteUrl, isProductionHost } = rootData;
+  let ogImageUrl = siteUrl + "/img/og.1.jpg";
 
-  if (!data) {
+  if (!loaderData) {
     return [{ title: "Not Found" }];
   }
 
-  let { doc } = data;
+  let { doc } = loaderData;
 
-  let robots = rootData.isProductionHost ? "index,follow" : "noindex,nofollow";
+  let robots = isProductionHost ? "index,follow" : "noindex,nofollow";
   robots = "index,follow";
-
-  let { siteUrl, ogImageUrl } = data;
 
   return getMeta({
     title: `${doc.attrs.title} | Remix`,
