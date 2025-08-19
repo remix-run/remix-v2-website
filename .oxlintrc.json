@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-children-prop": "off",
+    "no-unused-vars": "warn",
+    "react-hooks/rules-of-hooks": "error"
+  },
+  "env": {
+    "builtin": true
+  }
+}

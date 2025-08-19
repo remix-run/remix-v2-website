@@ -61,7 +61,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     // repeat the request cycle. This isn't a problem if the doc is in the LRU
     // cache but we should probably fix it anyway.
     return redirect(`/docs/${params["*"]}`);
-    // eslint-disable-next-line no-empty -- should probably do something here
+    // should probably do something here
   } catch {}
   throw data({}, { status: 404 });
 };
