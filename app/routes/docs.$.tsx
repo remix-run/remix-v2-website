@@ -8,8 +8,6 @@ import {
   data,
   useLoaderData,
 } from "react-router";
-import type { HeadersFunction } from "react-router";
-import { CACHE_CONTROL } from "~/lib/http.server";
 import invariant from "tiny-invariant";
 import type { Doc } from "~/lib/docs";
 import { getDoc } from "~/lib/docs";
@@ -27,22 +25,12 @@ export async function loader({ params }: Route.LoaderArgs) {
       : `docs/${params["*"] || "index"}`;
     let doc = await getDoc(slug);
     if (!doc) throw null;
-    return data(
-      { doc },
-      { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
-    );
+    return data({ doc });
   } catch (error) {
     console.error("Caught error in docs.$ loader", error);
     throw data(null, { status: 404 });
   }
 }
-
-export const headers: HeadersFunction = ({ loaderHeaders }) => {
-  // Inherit the caching headers from the loader so we don't cache 404s
-  let headers = new Headers(loaderHeaders);
-  headers.set("Vary", "Cookie");
-  return headers;
-};
 
 export function meta({ loaderData, matches }: Route.MetaArgs) {
   let rootData = matches[0].loaderData;

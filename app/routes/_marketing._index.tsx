@@ -1,4 +1,4 @@
-import { type HeadersFunction, data } from "react-router";
+import { data } from "react-router";
 import { OutlineButtonLink, PrimaryButtonLink } from "~/ui/buttons";
 import { getMarkdownTutPage, type Prose } from "~/lib/mdtut.server";
 import "~/styles/index.css";
@@ -8,7 +8,6 @@ import { ScrollExperience } from "~/ui/homepage-scroll-experience";
 import invariant from "tiny-invariant";
 import { Fragment } from "react";
 import { getMeta } from "~/lib/meta";
-import { CACHE_CONTROL } from "~/lib/http.server";
 import type { Route } from "./+types/_marketing._index";
 
 export function meta({ matches }: Route.MetaArgs) {
@@ -34,20 +33,12 @@ export const loader = async () => {
   invariant(mutations.type === "sequence", "mutations.md should be a sequence");
   invariant(errors.type === "sequence", "errors.md should be a sequence");
 
-  return data(
-    {
-      sample,
-      sampleSm,
-      mutations,
-      errors,
-    },
-    { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
-  );
-};
-
-export const headers: HeadersFunction = ({ loaderHeaders }) => {
-  // Inherit the caching headers from the loader so we don't cache 404s
-  return loaderHeaders;
+  return data({
+    sample,
+    sampleSm,
+    mutations,
+    errors,
+  });
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {

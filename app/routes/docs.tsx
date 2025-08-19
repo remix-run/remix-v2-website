@@ -11,7 +11,6 @@ import {
   useNavigate,
   href,
 } from "react-router";
-import type { HeadersFunction } from "react-router";
 import cx from "clsx";
 import { DocSearch } from "~/ui/docsearch";
 
@@ -25,16 +24,8 @@ import {
   setColorScheme,
   type ColorScheme,
 } from "~/lib/color-scheme";
-import { CACHE_CONTROL } from "~/lib/http.server";
 import { Doc, getMenu } from "~/lib/docs";
 import { useHydrated } from "~/ui/primitives/utils";
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": CACHE_CONTROL.DEFAULT,
-    Vary: "Cookie",
-  };
-};
 
 export const loader = async () => {
   return {
