@@ -19,9 +19,9 @@ let OriginalDocSearchModal = lazy(() =>
 );
 
 let docSearchProps = {
-  appId: "6OHWJSR8G4",
-  indexName: "remix",
-  apiKey: "dff56670dbec8494409989d6ec9c8ac2",
+  appId: "BFBC4F0EA6",
+  indexName: "Remix v2 Docs",
+  apiKey: "8ee6d35354da58cf9f1f59f56f29fbbb",
 } satisfies DocSearchProps;
 
 // TODO: Refactor a bit when we add Vite with css imports per component
