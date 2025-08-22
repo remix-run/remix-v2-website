@@ -1,5 +1,3 @@
-import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
 import { type Route } from "./+types/route";
 import { ResourceTag } from "~/ui/resources";
 import { getResourcesForRequest } from "./data.server";
@@ -9,13 +7,16 @@ import {
   ResourceCards,
   ResourceCategoryTabs,
 } from "./ui";
+import type { Category } from "~/lib/resources.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  let requestUrl = new URL(request.url);
-  let siteUrl = requestUrl.protocol + "//" + requestUrl.host;
+export const loader = async ({ request }: Route.LoaderArgs) => {
   let resource = await getResourcesForRequest(request);
 
-  return { ...resource, siteUrl };
+  return {
+    selectedCategory: "all" as Category,
+    selectedTags: [],
+    ...resource,
+  };
 };
 
 export async function clientLoader({
@@ -23,10 +24,9 @@ export async function clientLoader({
   serverLoader,
 }: Route.ClientLoaderArgs) {
   let { resources } = await serverLoader();
-  let url = new URL(request.url);
   // get search params: category and tags
   let searchParams = new URL(request.url).searchParams;
-  let selectedCategory = searchParams.get("category");
+  let selectedCategory = searchParams.get("category") as Category;
   let selectedTagsSet = new Set(searchParams.getAll("tag"));
   let tags = new Set(resources.flatMap(({ tags }) => tags));
 
@@ -74,8 +74,8 @@ export async function clientLoader({
 
 clientLoader.hydrate = true;
 
-export const meta: MetaFunction<typeof loader> = (args) => {
-  let { siteUrl } = args.data || {};
+export const meta = (args: Route.MetaArgs) => {
+  let { siteUrl } = args.matches[0].loaderData;
   let title = "Remix Resources";
   let image = siteUrl ? `${siteUrl}/img/og.1.jpg` : null;
   let description = "Remix Resources made by the community, for the community";
@@ -96,9 +96,9 @@ export const meta: MetaFunction<typeof loader> = (args) => {
   ];
 };
 
-export default function Resources() {
+export default function Resources({ loaderData }: Route.ComponentProps) {
   let { featuredResource, selectedCategory, selectedTags, resources } =
-    useLoaderData<typeof loader>();
+    loaderData;
 
   return (
     <main className="container flex flex-1 flex-col items-center md:mt-8">
