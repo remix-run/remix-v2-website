@@ -1,6 +1,6 @@
 ---
 title: Backend For Frontend
-toc: false
+toc: trust
 ---
 
 # Backend For Your Frontend
