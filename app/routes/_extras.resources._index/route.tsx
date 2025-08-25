@@ -9,8 +9,8 @@ import {
 } from "./ui";
 import type { Category } from "~/lib/resources.server";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  let resource = await getResourcesForRequest(request);
+export const loader = async () => {
+  let resource = await getResourcesForRequest();
 
   return {
     selectedCategory: "all" as Category,
