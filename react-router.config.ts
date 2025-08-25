@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Config } from "@react-router/dev/config";
+import { fetchResourcesFromYaml } from "./app/lib/resources.server";
+import { slugify } from "./app/ui/primitives/utils";
 
 export default {
   future: {
@@ -10,8 +12,15 @@ export default {
   routeDiscovery: {
     mode: "initial",
   },
-  prerender({ getStaticPaths }) {
-    return [...getStaticPaths(), "/docs", ...getDocsUrls(), ...getRedirects()];
+  async prerender({ getStaticPaths }) {
+    return [
+      "/docs",
+      "/resources",
+      ...getStaticPaths(),
+      ...getDocsUrls(),
+      ...(await getResources()),
+      ...getRedirects(),
+    ];
   },
 } satisfies Config;
 
@@ -23,6 +32,11 @@ function getDocsUrls() {
   return files
     .filter((f) => f.endsWith(".md") && path.basename(f) !== "index.md")
     .map((f) => `/docs/${f.replace(/\.md$/, "")}`);
+}
+
+async function getResources() {
+  let resources = await fetchResourcesFromYaml();
+  return resources.map((r) => `/resources/${slugify(r.title)}`);
 }
 
 function getRedirects() {

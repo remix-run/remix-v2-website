@@ -18,6 +18,8 @@ jobs:
     if: github.repository == 'remix-run/remix-v2-website'
     name: 🏗 Build
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
@@ -31,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: 🏗 Build
-        run: npm run build
+        run: npm run build:ci
 
       - name: ⬆️ Upload static files as artifact
         uses: actions/upload-pages-artifact@v3

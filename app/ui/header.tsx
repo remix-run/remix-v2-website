@@ -38,6 +38,7 @@ export function Header({
       <nav className="hidden gap-8 md:flex" aria-label="Main">
         <HeaderLink to={href("/docs")}>Docs</HeaderLink>
         <HeaderLink to="https://remix.run/blog">Blog</HeaderLink>
+        <HeaderLink to={href("/resources")}>Resources</HeaderLink>
       </nav>
 
       <HeaderMenuMobile className="md:hidden" />
@@ -65,6 +66,7 @@ function HeaderMenuMobile({ className = "" }: { className: string }) {
         <nav className="flex flex-col gap-2 px-2 py-2.5">
           <HeaderLink to={href("/docs")}>Docs</HeaderLink>
           <HeaderLink to="https://remix.run/blog">Blog</HeaderLink>
+          <HeaderLink to={href("/resources")}>Resources</HeaderLink>
         </nav>
       </DetailsPopup>
     </DetailsMenu>
