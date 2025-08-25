@@ -13,6 +13,8 @@ jobs:
   lint:
     name: ⬣ Lint
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: "dummy-value-needed-for-typecheck"
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
