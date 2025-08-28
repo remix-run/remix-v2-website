@@ -718,7 +718,7 @@ You can also check out the [React Router "File Uploads" doc][react-router-file-u
 
 [development-strategy]: ../guides/api-development-strategy
 [fetcherpersist-rfc]: https://github.com/remix-run/remix/discussions/7698
-[relativesplatpath-changelog]: https://github.com/remix-run/remix/blob/main/CHANGELOG.md#futurev3_relativesplatpath
+[relativesplatpath-changelog]: https://github.com/remix-run/remix/blob/v2/CHANGELOG.md#futurev3_relativesplatpath
 [single-fetch]: ../guides/single-fetch
 [lazy-route-discovery]: ../guides/lazy-route-discovery
 [lazy-route-discovery-blog-post]: https://remix.run/blog/fog-of-war
