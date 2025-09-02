@@ -275,7 +275,7 @@ What's next?
 [create-remix]: ../other-api/create-remix
 [runtimes]: ../discussion/runtimes
 [inspect]: https://nodejs.org/en/docs/guides/debugging-getting-started/
-[tutorial]: /docs/start/tutorial./tutorial
+[tutorial]: /docs/start/tutorial
 [vite_config]: ../file-conventions/vite-config
 [templates]: https://github.com/remix-run/remix/tree/v2/templates
 [http-localhost-3000]: http://localhost:3000
