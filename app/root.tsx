@@ -10,6 +10,7 @@ import {
   useMatches,
   useRouteError,
   data,
+  redirect,
 } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
 import {
@@ -46,6 +47,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
       url.pathname === "/docs/en/v1/api/conventions",
   });
 }
+
+export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
+  ({ request }) => {
+    let url = new URL(request.url);
+    if (url.pathname.endsWith("/")) {
+      throw redirect(url.pathname.slice(0, -1) + url.search + url.hash);
+    }
+  },
+];
+
+// Export a hydrated clientLoader so that the middleware runs on hydration
+export function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  return serverLoader();
+}
+
+clientLoader.hydrate = true;
 
 export function links() {
   let preloadedFonts = [
