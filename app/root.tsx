@@ -26,7 +26,7 @@ import { canUseDOM } from "./ui/primitives/utils";
 import { GlobalLoading } from "./ui/global-loading";
 import { type Route } from "./+types/root";
 
-export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
+export const middleware: Route.MiddlewareFunction[] = [
   ({ request }) => {
     handleRedirects(new URL(request.url).pathname);
   },

@@ -7,7 +7,7 @@ import { slugify } from "./app/ui/primitives/utils";
 export default {
   future: {
     unstable_optimizeDeps: true,
-    unstable_middleware: true,
+    v8_middleware: true,
   },
   routeDiscovery: {
     mode: "initial",
