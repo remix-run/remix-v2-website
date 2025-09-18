@@ -47,7 +47,7 @@ function handleStaticFileRequests(param: string | undefined) {
   }
 }
 
-export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
+export const middleware: Route.MiddlewareFunction[] = [
   ({ params }) => {
     handleStaticFileRequests(params["*"]);
   },
