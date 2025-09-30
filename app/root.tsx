@@ -51,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   ({ request }) => {
     let url = new URL(request.url);
-    if (url.pathname.endsWith("/")) {
+    if (url.pathname !== "/" && url.pathname.endsWith("/")) {
       throw redirect(url.pathname.slice(0, -1) + url.search + url.hash);
     }
   },
