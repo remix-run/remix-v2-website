@@ -12,15 +12,18 @@ export default {
   routeDiscovery: {
     mode: "initial",
   },
-  async prerender({ getStaticPaths }) {
-    return [
-      "/docs",
-      "/resources",
-      ...getStaticPaths(),
-      ...getDocsUrls(),
-      ...(await getResources()),
-      ...getRedirects(),
-    ];
+  prerender: {
+    async paths({ getStaticPaths }) {
+      return [
+        "/docs",
+        "/resources",
+        ...getStaticPaths(),
+        ...getDocsUrls(),
+        ...(await getResources()),
+        ...getRedirects(),
+      ];
+    },
+    unstable_concurrency: 4, // 1:23s, 2:15s, 4:9s, 8:8s
   },
 } satisfies Config;
 
