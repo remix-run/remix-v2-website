@@ -153,7 +153,8 @@ export const action = async ({
     .createHmac("sha256", process.env.GITHUB_WEBHOOK_SECRET)
     .update(JSON.stringify(payload))
     .digest("hex")}`;
-  if (signature !== generatedSignature) {
+
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(generatedSignature))) {
     return json({ message: "Signature mismatch" }, 401);
   }
 
