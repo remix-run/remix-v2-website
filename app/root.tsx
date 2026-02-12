@@ -52,6 +52,7 @@ export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   ({ request }) => {
     let url = new URL(request.url);
     if (url.pathname !== "/" && url.pathname.endsWith("/")) {
+      console.log("redirecting!");
       throw redirect(url.pathname.slice(0, -1) + url.search + url.hash);
     }
   },

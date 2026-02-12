@@ -20,6 +20,14 @@ let _resources = fetchResourcesFromYaml();
 
 let starFormatter = new Intl.NumberFormat("en", { notation: "compact" });
 
+const DEFAULT_GITHUB_DATA: ResourceGitHubData = {
+  description: undefined,
+  sponsorUrl: undefined,
+  stars: 0,
+  starsFormatted: "0",
+  tags: [],
+};
+
 type ResourceGitHubData = {
   description?: string;
   sponsorUrl?: string;
@@ -33,19 +41,23 @@ export type Resource = ResourceYamlData & ResourceGitHubData;
 export type Category = "all" | ResourceYamlData["category"];
 
 /**
- * Gets all of the resources, fetching and merging GitHub data for each one
+ * Gets all of the resources, fetching and merging GitHub data for each one.
+ * Falls back to YAML-only data when GitHub is unavailable (e.g. during static build).
  */
 export async function getAllResources({ octokit }: CacheContext) {
   let resources: Resource[] = await Promise.all(
     _resources.map(async (resource) => {
-      // This is cached, so should just be a simple lookup
-      let gitHubData = await getResourceGitHubData(resource.repoUrl, {
-        octokit,
-      });
-      if (!gitHubData) {
-        throw new Error(`Could not find GitHub data for ${resource.repoUrl}`);
+      try {
+        let gitHubData = await getResourceGitHubData(resource.repoUrl, {
+          octokit,
+        });
+        if (!gitHubData) {
+          return { ...resource, ...DEFAULT_GITHUB_DATA };
+        }
+        return { ...resource, ...gitHubData };
+      } catch {
+        return { ...resource, ...DEFAULT_GITHUB_DATA };
       }
-      return { ...resource, ...gitHubData };
     }),
   );
 
@@ -83,7 +95,8 @@ export function replaceRelativeLinks(inputString: string, repoUrl: string) {
 }
 
 /**
- * Get a single resource by slug, fetching and merging GitHub data and README contents
+ * Get a single resource by slug, fetching and merging GitHub data and README contents.
+ * Falls back to YAML-only data when GitHub is unavailable (e.g. during static build).
  */
 export async function getResource(
   resourceSlug: string,
@@ -95,20 +108,32 @@ export async function getResource(
 
   if (!resource) return;
 
-  let [gitHubData, readmeHtml] = await Promise.all([
-    getResourceGitHubData(resource.repoUrl, { octokit }),
-    getResourceReadme(resource.repoUrl, { octokit }),
-  ]);
+  try {
+    let [gitHubData, readmeHtml] = await Promise.all([
+      getResourceGitHubData(resource.repoUrl, { octokit }),
+      getResourceReadme(resource.repoUrl, { octokit }),
+    ]);
 
-  if (!gitHubData || !readmeHtml) {
-    throw new Error(`Could not find GitHub data for ${resource.repoUrl}`);
+    if (!gitHubData) {
+      return {
+        ...resource,
+        ...DEFAULT_GITHUB_DATA,
+        readmeHtml: "",
+      };
+    }
+
+    return {
+      ...resource,
+      ...gitHubData,
+      readmeHtml: readmeHtml ?? "",
+    };
+  } catch {
+    return {
+      ...resource,
+      ...DEFAULT_GITHUB_DATA,
+      readmeHtml: "",
+    };
   }
-
-  return {
-    ...resource,
-    ...gitHubData,
-    readmeHtml,
-  };
 }
 
 //#region LRUCache and fetchers for GitHub data and READMEs
