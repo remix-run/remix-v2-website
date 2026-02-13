@@ -29,7 +29,12 @@ export function OutlineButtonLink({
 const baseButtonLinkClass =
   "inline-flex items-center justify-center xl:text-xl h-14 xl:h-16 box-border px-8 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent font-semibold";
 
-const primaryButtonLinkClass = `${baseButtonLinkClass} bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-200 transition-colors duration-200`;
+export const primaryButtonLinkClass = `${baseButtonLinkClass} bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-200 transition-colors duration-200`;
+
+export const outlineSecondaryButtonLinkClass =
+  "inline-flex items-center justify-center xl:text-xl h-14 xl:h-16 t box-border px-8 rounded bg-transparent text-white border-current hover:border-pink-brand focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-blue-200 focus:ring-opacity-80 font-semibold border-2";
+
+export const secondaryButtonLinkClass = `${baseButtonLinkClass} bg-pink-brand text-white hover:bg-pink-600 focus:ring-blue-200 transition-colors duration-200`;
 
 export function PrimaryButtonLink({
   to,
