@@ -46,94 +46,92 @@ export async function loader({ params }: LoaderFunctionArgs) {
   let speakerSessions = allSessions.filter((session) =>
     (session.speakers || []).some((sp) => sp.id === speaker?.id),
   );
-  return data(
-    {
-      speaker: {
-        ...speaker,
-        sessions: speaker.isEmcee
-          ? []
-          : speakerSessions.map((session) => {
-              let startsAt = session.startsAt || null;
-              let endsAt = session.endsAt || null;
+  return data({
+    speaker: {
+      ...speaker,
+      sessions: speaker.isEmcee
+        ? []
+        : speakerSessions.map((session) => {
+            let startsAt = session.startsAt || null;
+            let endsAt = session.endsAt || null;
 
-              let descriptionHTML: string | null = null;
-              if (session.description) {
-                descriptionHTML = session.description
-                  .split("\n")
-                  .reduce((html, line, i, lines) => {
-                    line = line.trim();
-                    if (!line) return html;
+            let descriptionHTML: string | null = null;
+            if (session.description) {
+              descriptionHTML = session.description
+                .split("\n")
+                .reduce((html, line, i, lines) => {
+                  line = line.trim();
+                  if (!line) return html;
 
-                    let olRegExp = /^\d+\.\s/;
-                    let ulRegExp = /^[-*]\s/;
-                    let previousLine = lines[i - 1];
-                    let nextLine = lines[i + 1];
+                  let olRegExp = /^\d+\.\s/;
+                  let ulRegExp = /^[-*]\s/;
+                  let previousLine = lines[i - 1];
+                  let nextLine = lines[i + 1];
 
-                    if (olRegExp.test(line)) {
-                      let digitless = line.replace(olRegExp, "");
-                      let nextLineStart =
-                        previousLine && olRegExp.test(previousLine)
-                          ? "<li>"
-                          : "<ol><li>";
-                      let nextLineEnd =
-                        nextLine && olRegExp.test(nextLine)
-                          ? "</li>"
-                          : "</li></ol>";
-                      return (
-                        html + nextLineStart + digitless.trim() + nextLineEnd
-                      );
-                    }
+                  if (olRegExp.test(line)) {
+                    let digitless = line.replace(olRegExp, "");
+                    let nextLineStart =
+                      previousLine && olRegExp.test(previousLine)
+                        ? "<li>"
+                        : "<ol><li>";
+                    let nextLineEnd =
+                      nextLine && olRegExp.test(nextLine)
+                        ? "</li>"
+                        : "</li></ol>";
+                    return (
+                      html + nextLineStart + digitless.trim() + nextLineEnd
+                    );
+                  }
 
-                    if (ulRegExp.test(line)) {
-                      let bulletless = line.replace(ulRegExp, "");
-                      let nextLineStart =
-                        previousLine && ulRegExp.test(previousLine)
-                          ? "<li>"
-                          : "<ul><li>";
-                      let nextLineEnd =
-                        nextLine && ulRegExp.test(nextLine)
-                          ? "</li>"
-                          : "</li></ul>";
-                      return (
-                        html + nextLineStart + bulletless.trim() + nextLineEnd
-                      );
-                    }
+                  if (ulRegExp.test(line)) {
+                    let bulletless = line.replace(ulRegExp, "");
+                    let nextLineStart =
+                      previousLine && ulRegExp.test(previousLine)
+                        ? "<li>"
+                        : "<ul><li>";
+                    let nextLineEnd =
+                      nextLine && ulRegExp.test(nextLine)
+                        ? "</li>"
+                        : "</li></ul>";
+                    return (
+                      html + nextLineStart + bulletless.trim() + nextLineEnd
+                    );
+                  }
 
-                    return html + "<p>" + line.trim() + "</p>";
-                  }, "");
-              }
+                  return html + "<p>" + line.trim() + "</p>";
+                }, "");
+            }
 
-              return {
-                ...session,
-                descriptionHTML,
-                startsAtISO: startsAt?.toISO() || null,
-                startsAtFormatted:
-                  startsAt?.toLocaleString(
-                    {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      timeZone: "America/Denver",
-                    },
-                    { locale: "en-US" },
-                  ) || null,
-                endsAtISO: endsAt?.toISO() || null,
-                endsAtFormatted:
-                  endsAt?.toLocaleString(
-                    {
-                      hour: "numeric",
-                      minute: "numeric",
-                      timeZone: "America/Denver",
-                    },
-                    { locale: "en-US" },
-                  ) || null,
-              };
-            }),
-      },
+            return {
+              ...session,
+              descriptionHTML,
+              startsAtISO: startsAt?.toISO() || null,
+              startsAtFormatted:
+                startsAt?.toLocaleString(
+                  {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    timeZone: "America/Denver",
+                  },
+                  { locale: "en-US" },
+                ) || null,
+              endsAtISO: endsAt?.toISO() || null,
+              endsAtFormatted:
+                endsAt?.toLocaleString(
+                  {
+                    hour: "numeric",
+                    minute: "numeric",
+                    timeZone: "America/Denver",
+                  },
+                  { locale: "en-US" },
+                ) || null,
+            };
+          }),
     },
-  );
+  });
 }
 
 export default function SpeakerRoute() {

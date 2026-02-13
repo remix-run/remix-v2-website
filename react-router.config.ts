@@ -99,4 +99,3 @@ function getConf2022SpeakerPaths(): string[] {
     .filter((s: unknown) => s && typeof s === "object" && "name" in s)
     .map((s: { name: string }) => `/conf/2022/speakers/${slugify(s.name)}`);
 }
-

@@ -17,31 +17,30 @@ export async function loader() {
     style: "long",
     type: "conjunction",
   });
-  return data(
-    {
-      schedules: schedules
-        .filter((s) => s.date != null)
-        .map((schedule) => {
-          let date = schedule.date!;
-          return {
-            ...schedule,
-            dateSlug: slugify(
-              formatDate(date, {
-                month: "short",
-                day: "numeric",
-              }),
-            ),
-            dateISO: date.toISO(),
-            dateFormatted: formatDate(date, {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            }),
-            dateFormattedShort: formatDate(date, {
+  return data({
+    schedules: schedules
+      .filter((s) => s.date != null)
+      .map((schedule) => {
+        let date = schedule.date!;
+        return {
+          ...schedule,
+          dateSlug: slugify(
+            formatDate(date, {
               month: "short",
               day: "numeric",
             }),
-            sessions: schedule.sessions.map((session) => {
+          ),
+          dateISO: date.toISO(),
+          dateFormatted: formatDate(date, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          }),
+          dateFormattedShort: formatDate(date, {
+            month: "short",
+            day: "numeric",
+          }),
+          sessions: schedule.sessions.map((session) => {
             let startsAt = session.startsAt ? session.startsAt : null;
             let endsAt = session.endsAt ? session.endsAt : null;
             return {
@@ -69,8 +68,7 @@ export async function loader() {
           }),
         };
       }),
-    },
-  );
+  });
 }
 
 export const meta: MetaFunction = () => {
@@ -98,7 +96,7 @@ export default function Schedule() {
       </h1>
       <div className="flex flex-col gap-10 text-lg lg:text-xl">
         <nav
-          className="flex justify-around -mb-px"
+          className="-mb-px flex justify-around"
           role="tablist"
           aria-label="Schedule days"
         >
@@ -195,10 +193,7 @@ export default function Schedule() {
                             {session.title}
                           </h3>
                           {session.speakersFormatted ? (
-                            <span
-                              aria-hidden
-                              className="text-sm text-gray-300"
-                            >
+                            <span aria-hidden className="text-sm text-gray-300">
                               Presented by {session.speakersFormatted}
                             </span>
                           ) : null}

@@ -25,11 +25,7 @@ export function validateSessionizeSpeakerData(
 export function validateSessionizeSessionData(
   data: unknown,
 ): asserts data is SessionizeSessionData {
-  if (
-    data == null ||
-    typeof data !== "object" ||
-    !("id" in data)
-  ) {
+  if (data == null || typeof data !== "object" || !("id" in data)) {
     throw new Error("Invalid session data");
   }
 }

@@ -44,10 +44,16 @@ export async function getConf2023SpeakerPaths(): Promise<string[]> {
     if (!res.ok) throw new Error(`Sessionize responded ${res.status}`);
     let json: unknown = await res.json();
     if (!json || !Array.isArray(json)) throw new Error("Expected array");
-    return json.map((s: { firstName?: string; lastName?: string; questionAnswers?: Array<{ question: string; answer: string }> }) => {
-      let nameFull = getNameFull(s);
-      return `/conf/2023/speakers/${slugify(nameFull)}`;
-    });
+    return json.map(
+      (s: {
+        firstName?: string;
+        lastName?: string;
+        questionAnswers?: Array<{ question: string; answer: string }>;
+      }) => {
+        let nameFull = getNameFull(s);
+        return `/conf/2023/speakers/${slugify(nameFull)}`;
+      },
+    );
   } catch (err) {
     console.warn(
       "[prerender] Could not fetch 2023 speakers from Sessionize; skipping speaker pages:",

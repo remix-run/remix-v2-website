@@ -87,7 +87,9 @@ export default function Workshops() {
                 submissions, revalidation, and redirects.
               </li>
               <li>Build skeleton UI for instant user feedback on navigation</li>
-              <li>Step up your app&apos;s accessibility with focus management</li>
+              <li>
+                Step up your app&apos;s accessibility with focus management
+              </li>
               <li>Map keyboard shortcuts to data mutations</li>
               <li>and more!</li>
             </ul>

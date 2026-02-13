@@ -35,7 +35,7 @@ export default function Schedule() {
               prefetch="intent"
               className={`block w-full rounded px-4 py-2 text-center lg:w-auto ${
                 currentDay === slug
-                  ? "bg-white text-blue-800 font-semibold"
+                  ? "bg-white font-semibold text-blue-800"
                   : "hover:bg-white/10"
               }`}
             >

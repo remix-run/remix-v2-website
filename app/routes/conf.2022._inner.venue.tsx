@@ -98,10 +98,10 @@ export default function Venue() {
             </p>
             <p>
               In addition to the great ammenities, you&apos;ll enjoy the
-              benefits that come with a hotel-venue. Don&apos;t worry about finding
-              transportation to the conference and activities. Hang out with
-              other attendees in the lobby and other areas of the hotel as late
-              as you please.
+              benefits that come with a hotel-venue. Don&apos;t worry about
+              finding transportation to the conference and activities. Hang out
+              with other attendees in the lobby and other areas of the hotel as
+              late as you please.
             </p>
             <p>
               The hotel is also within walking distance to food, drink, and fun.{" "}
