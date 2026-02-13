@@ -1,7 +1,6 @@
 import { data, Link, useLoaderData } from "react-router";
 import type { MetaFunction } from "react-router";
 import { getSchedule } from "~/lib/conf2022.server";
-import { CACHE_CONTROL } from "~/lib/cache-control";
 import { slugify } from "~/ui/primitives/utils";
 
 export const meta: MetaFunction = () => {
@@ -16,10 +15,7 @@ export const meta: MetaFunction = () => {
 
 export async function loader() {
   const scheduleItems = await getSchedule();
-  return data(
-    { scheduleItems },
-    { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
-  );
+  return data({ scheduleItems });
 }
 
 export default function May25Schedule() {

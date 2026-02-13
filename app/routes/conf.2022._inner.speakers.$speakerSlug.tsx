@@ -9,7 +9,6 @@ import {
 } from "react-router";
 import { getSpeakers, getTalks } from "~/lib/conf2022.server";
 import "~/styles/conf-speaker.css";
-import { CACHE_CONTROL } from "~/lib/cache-control";
 import { slugify } from "~/ui/primitives/utils";
 
 export const meta: MetaFunction<typeof loader> = (args) => {
@@ -43,10 +42,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const talks = allTalks
     .filter((t) => t.speakers.includes(speaker.name))
     .map(({ description, ...rest }) => rest);
-  return data(
-    { speaker, talks },
-    { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
-  );
+  return data({ speaker, talks });
 };
 
 export default function SpeakerRoute() {

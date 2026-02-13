@@ -3,7 +3,6 @@ import type { MetaFunction } from "react-router";
 import { data } from "react-router";
 import cx from "clsx";
 import { formatDate, getSchedules } from "~/lib/conf2023.server";
-import { CACHE_CONTROL } from "~/lib/cache-control";
 import { slugify } from "~/ui/primitives/utils";
 
 export async function loader() {
@@ -71,7 +70,6 @@ export async function loader() {
         };
       }),
     },
-    { headers: { "Cache-Control": CACHE_CONTROL.conf } },
   );
 }
 

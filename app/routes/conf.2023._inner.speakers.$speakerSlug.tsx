@@ -2,7 +2,6 @@ import * as React from "react";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { data, useLoaderData } from "react-router";
 import "~/styles/conf-speaker.css";
-import { CACHE_CONTROL } from "~/lib/cache-control";
 import { getSpeakerBySlug, getConfSessions } from "~/lib/conf2023.server";
 import type { Speaker, SpeakerSession } from "~/lib/conf2023";
 import invariant from "tiny-invariant";
@@ -134,7 +133,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
             }),
       },
     },
-    { headers: { "Cache-Control": CACHE_CONTROL.conf } },
   );
 }
 

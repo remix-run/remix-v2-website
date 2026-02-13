@@ -6,7 +6,6 @@ import { Fragment } from "react";
 import type { Sponsor, Speaker } from "~/lib/conf";
 import { getSpeakers, getSponsors } from "~/lib/conf2022.server";
 import { Link } from "~/ui/link";
-import { CACHE_CONTROL } from "~/lib/cache-control";
 import { getMeta } from "~/lib/meta";
 
 export const meta: MetaFunction<typeof loader> = (args) => {
@@ -49,10 +48,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let requestUrl = new URL(request.url);
   let siteUrl = requestUrl.protocol + "//" + requestUrl.host;
 
-  return data(
-    { siteUrl, speakers: speakersShuffled, sponsors },
-    { headers: { "Cache-Control": CACHE_CONTROL.DEFAULT } },
-  );
+  return data({ siteUrl, speakers: speakersShuffled, sponsors });
 };
 
 export default function ConfIndex() {
