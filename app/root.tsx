@@ -13,10 +13,6 @@ import {
   redirect,
 } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
-import {
-  load as loadFathom,
-  type LoadOptions as FathomLoadOptions,
-} from "fathom-client";
 import "~/styles/tailwind.css";
 import "~/styles/bailwind.css";
 import { removeTrailingSlashes, handleRedirects } from "~/lib/http.server";
@@ -158,15 +154,6 @@ export default function App() {
     return false;
   });
 
-  if (process.env.NODE_ENV !== "development") {
-    // oxlint-disable-next-line react-hooks/rules-of-hooks
-    useFathomClient("IRVDGCHK", {
-      url: "https://cdn.usefathom.com/script.js",
-      spa: "history",
-      excludedDomains: ["localhost"],
-    });
-  }
-
   return (
     <Document noIndex={noIndex} forceDark={forceDark}>
       <Outlet />
@@ -224,13 +211,4 @@ export function ErrorBoundary() {
       </div>
     </Document>
   );
-}
-
-function useFathomClient(siteId: string, loadOptions: FathomLoadOptions) {
-  let loaded = React.useRef(false);
-  React.useEffect(() => {
-    if (loaded.current) return;
-    loadFathom(siteId, loadOptions);
-    loaded.current = true;
-  }, [loadOptions, siteId]);
 }
