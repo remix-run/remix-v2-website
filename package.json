@@ -26,7 +26,6 @@
     "clsx": "^2.1.1",
     "cssnano": "^6.0.3",
     "escape-goat": "^4.0.0",
-    "fathom-client": "^3.6.0",
     "front-matter": "^4.0.2",
     "gray-matter": "^4.0.3",
     "isbot": "^4",
